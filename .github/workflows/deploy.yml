@@ -1,0 +1,104 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  deploy:
+    name: Deploy to 192.168.0.102
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H 192.168.0.102 >> ~/.ssh/known_hosts
+      
+      - name: Deploy to Server
+        run: |
+          ssh -i ~/.ssh/deploy_key talha@192.168.0.102 << 'ENDSSH'
+            set -e
+            
+            echo "======================================"
+            echo "Starting deployment..."
+            echo "======================================"
+            
+            # Navigate to project directory
+            cd /home/talha/curated_context_containers/docker/chat_converter || {
+              echo "Error: Project directory not found"
+              exit 1
+            }
+            
+            # Pull latest changes
+            echo "Pulling latest changes from GitHub..."
+            git fetch origin
+            git reset --hard origin/main
+            
+            # Rebuild and restart containers
+            echo "Rebuilding Docker images..."
+            docker-compose build --no-cache
+            
+            echo "Restarting containers..."
+            docker-compose down
+            docker-compose up -d
+            
+            # Clean up old images
+            echo "Cleaning up old Docker images..."
+            docker image prune -f
+            
+            # Verify containers are running
+            echo "======================================"
+            echo "Verifying deployment..."
+            echo "======================================"
+            sleep 5
+            
+            if docker ps | grep -q chat_converter; then
+              echo "✅ Containers are running"
+              docker ps | grep chat_converter
+            else
+              echo "❌ Deployment failed - containers not running"
+              docker-compose logs --tail=50
+              exit 1
+            fi
+            
+            # Test endpoints
+            echo "======================================"
+            echo "Testing endpoints..."
+            echo "======================================"
+            
+            if curl -sf http://localhost:8080/api/chats > /dev/null; then
+              echo "✅ Main API is responding"
+            else
+              echo "⚠️  Main API not responding"
+            fi
+            
+            if curl -sf http://localhost:8090/mcp > /dev/null; then
+              echo "✅ MCP server is responding"
+            else
+              echo "⚠️  MCP server not responding"
+            fi
+            
+            echo "======================================"
+            echo "Deployment completed successfully!"
+            echo "======================================"
+          ENDSSH
+      
+      - name: Cleanup SSH Key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
+      
+      - name: Deployment Status
+        if: success()
+        run: |
+          echo "🚀 Deployment successful!"
+          echo "📍 Services available at:"
+          echo "   - Main API: http://192.168.0.102:8081"
+          echo "   - MCP Server: http://192.168.0.102:8090"

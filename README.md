@@ -259,6 +259,62 @@ There are several approaches to persona alignment...
 
 ---
 
+## Automated Deployment
+
+This project includes automated deployment via GitHub Actions. Every push to the `main` branch automatically deploys to the server.
+
+### Initial Setup (One-Time)
+
+**1. Generate SSH key for GitHub Actions**
+```bash
+ssh-keygen -t ed25519 -C "github-actions@chat-converter" -f ~/.ssh/github_actions_chat_converter -N ""
+```
+
+**2. Add public key to server**
+```bash
+ssh-copy-id -i ~/.ssh/github_actions_chat_converter.pub talha@192.168.0.102
+```
+
+**3. Test SSH connection**
+```bash
+ssh -i ~/.ssh/github_actions_chat_converter talha@192.168.0.102 "echo 'Connection successful'"
+```
+
+**4. Add private key to GitHub Secrets**
+- Navigate to: `https://github.com/talhas-laboratory/chat_converter/settings/secrets/actions`
+- Click **New repository secret**
+- Name: `SERVER_SSH_KEY`
+- Value: Contents of `~/.ssh/github_actions_chat_converter` (private key)
+
+### How It Works
+
+When you push to `main`:
+1. GitHub Actions triggers the workflow
+2. Connects to your server via SSH
+3. Pulls latest code from the repository
+4. Rebuilds Docker images using docker-compose
+5. Restarts containers with new images
+6. Verifies deployment success
+
+### Monitor Deployments
+
+View deployment status at: `https://github.com/talhas-laboratory/chat_converter/actions`
+
+### Manual Deployment
+
+If needed, you can deploy manually using the deployment script:
+
+```bash
+# On the server
+cd /home/talha/curated_context_containers/docker/chat_converter
+./deploy.sh
+
+# Test deployment locally first (dry-run)
+./deploy.sh --dry-run
+```
+
+---
+
 ## Future Enhancements
 
 - HTML file upload support (for private chats)
