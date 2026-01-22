@@ -32,7 +32,7 @@ jobs:
             echo "======================================"
             
             # Navigate to project directory
-            cd /home/talha/curated_context_containers/docker/chat_converter || {
+            cd /home/talha/chat_converter || {
               echo "Error: Project directory not found"
               exit 1
             }
