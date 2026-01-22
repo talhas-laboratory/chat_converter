@@ -44,11 +44,11 @@ jobs:
             
             # Rebuild and restart containers
             echo "Rebuilding Docker images..."
-            docker-compose build --no-cache
+            docker compose build --no-cache
             
             echo "Restarting containers..."
-            docker-compose down
-            docker-compose up -d
+            docker compose down
+            docker compose up -d
             
             # Clean up old images
             echo "Cleaning up old Docker images..."
@@ -65,7 +65,7 @@ jobs:
               docker ps | grep chat_converter
             else
               echo "❌ Deployment failed - containers not running"
-              docker-compose logs --tail=50
+              docker compose logs --tail=50
               exit 1
             fi
             

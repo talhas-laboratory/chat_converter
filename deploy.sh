@@ -77,7 +77,7 @@ echo ""
 # Step 3: Rebuild Docker images
 echo -e "${BLUE}🔨 Rebuilding Docker images...${NC}"
 if [ "$DRY_RUN" = false ]; then
-  docker-compose build --no-cache
+  docker compose build --no-cache
   echo -e "${GREEN}✅ Images rebuilt successfully${NC}"
 else
   echo -e "${YELLOW}[DRY RUN] Would rebuild Docker images${NC}"
@@ -87,8 +87,8 @@ echo ""
 # Step 4: Restart containers
 echo -e "${BLUE}🔄 Restarting containers...${NC}"
 if [ "$DRY_RUN" = false ]; then
-  docker-compose down
-  docker-compose up -d
+  docker compose down
+  docker compose up -d
   echo -e "${GREEN}✅ Containers restarted${NC}"
 else
   echo -e "${YELLOW}[DRY RUN] Would restart containers${NC}"
