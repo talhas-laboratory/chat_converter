@@ -180,18 +180,20 @@ def _resolve_transport(value: str) -> str:
 def main() -> None:
     transport = _resolve_transport(os.getenv("MCP_TRANSPORT", "stdio"))
 
-    if transport == "streamable-http":
+    if transport in ("streamable-http", "sse"):
+        # For HTTP-based transports, use uvicorn directly with the FastMCP app
+        import uvicorn
+        
         host = os.getenv("MCP_HOST", "127.0.0.1")
         port = int(os.getenv("MCP_PORT", "8000"))
-        mcp.run(transport="streamable-http", host=host, port=port)
+        
+        # Get the ASGI app from FastMCP
+        app = mcp.get_asgi_app()
+        
+        uvicorn.run(app, host=host, port=port)
         return
 
-    if transport == "sse":
-        host = os.getenv("MCP_HOST", "127.0.0.1")
-        port = int(os.getenv("MCP_PORT", "8000"))
-        mcp.run(transport="sse", host=host, port=port)
-        return
-
+    # For stdio transport, use the standard run method
     mcp.run(transport="stdio")
 
 
