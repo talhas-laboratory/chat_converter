@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+playwright
+beautifulsoup4
+python-dateutil
+mcp[cli]>=1,<2

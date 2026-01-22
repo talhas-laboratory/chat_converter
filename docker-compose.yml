@@ -1,0 +1,24 @@
+services:
+  chat_converter:
+    build: .
+    container_name: chat_converter
+    ports:
+      - "8081:8080"
+    environment:
+      - PORT=8080
+    volumes:
+      - ./output:/app/output
+    restart: unless-stopped
+  chat_converter_mcp:
+    build: .
+    container_name: chat_converter_mcp
+    ports:
+      - "8090:8090"
+    environment:
+      - MCP_TRANSPORT=streamable-http
+      - MCP_HOST=0.0.0.0
+      - MCP_PORT=8090
+    volumes:
+      - ./output:/app/output
+    command: ["python", "-m", "src.mcp_server"]
+    restart: unless-stopped

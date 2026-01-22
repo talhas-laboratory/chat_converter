@@ -1,0 +1,16 @@
+[project]
+name = "chat_converter"
+version = "0.1.0"
+description = "Format LLM chats into clean Markdown"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "playwright",
+    "beautifulsoup4",
+    "python-dateutil",
+    "mcp[cli]>=1,<2",
+]
+
+[tool.uv]
+dev-dependencies = []
