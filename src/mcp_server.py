@@ -187,8 +187,8 @@ def main() -> None:
         host = os.getenv("MCP_HOST", "127.0.0.1")
         port = int(os.getenv("MCP_PORT", "8000"))
         
-        # Get the ASGI app from FastMCP
-        app = mcp.get_asgi_app()
+        # Get the ASGI app from FastMCP using the correct method
+        app = mcp.streamable_http_app()
         
         uvicorn.run(app, host=host, port=port)
         return
