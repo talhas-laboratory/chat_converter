@@ -13,7 +13,7 @@ NC='\033[0m' # No Color
 
 # Default values
 DRY_RUN=false
-PROJECT_DIR="/home/talha/chat_converter"
+PROJECT_DIR="/home/talha/apps/chat_converter"
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
