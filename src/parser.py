@@ -54,13 +54,14 @@ class ChatParser:
 
         # If title is generic or empty, try to derive from first user message
         generic_titles = [
-            "Gemini - direct access to Google AI",
-            "Untitled Chat",
-            "Gemini"
+            "direct access to google ai",
+            "untitled chat",
+            "gemini"
         ]
         
-        # Check if title exactly matches or starts with generic titles (in case of extra chars)
-        is_generic = not title or any(t.lower() in title.lower() for t in generic_titles)
+        # Check if cleaned title is in generic titles (exact match)
+        cleaned_title = title.lower().strip()
+        is_generic = not title or cleaned_title in generic_titles
 
         if is_generic and messages:
             # Find first user message
@@ -88,11 +89,20 @@ class ChatParser:
         # Try <title> tag
         if self.soup.title and self.soup.title.string:
             title = self.soup.title.string.strip()
+            
+            # Remove ltr mark if present
+            title = title.replace('\u200e', '')
+            
+            # Clean common prefixes
+            # Gemini often prefixes with "Gemini - "
+            if title.startswith("Gemini - "):
+                title = title[9:]
+                
             # Clean common suffixes
             for suffix in [' - ChatGPT', ' - Gemini', ' | Claude', ' - Claude']:
                 if title.endswith(suffix):
                     title = title[:-len(suffix)]
-            return title
+            return title.strip()
         
         # Try first h1
         h1 = self.soup.find('h1')
