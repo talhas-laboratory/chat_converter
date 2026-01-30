@@ -62,7 +62,7 @@ body {
 }
 
 .container {
-    max-width: 640px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 15vh 1rem;
     /* Push content down for whitespace */
@@ -328,8 +328,8 @@ button:disabled {
 
 .chats-list {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    /* Two in a row */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    /* Responsive columns */
     gap: 1.5rem;
     margin-top: 1.5rem;
 }
@@ -355,9 +355,13 @@ button:disabled {
     font-family: var(--font-mono);
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
-    white-space: nowrap;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
+    line-height: 1.3;
+    height: 2.6em; /* Fixed height for consistent alignment */
 }
 
 .chat-item-info p {
