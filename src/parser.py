@@ -51,6 +51,30 @@ class ChatParser:
         """Parse the HTML and extract chat data."""
         title = self._extract_title()
         messages = self._extract_messages()
+
+        # If title is generic or empty, try to derive from first user message
+        generic_titles = [
+            "Gemini - direct access to Google AI",
+            "Untitled Chat",
+            "Gemini"
+        ]
+        
+        # Check if title exactly matches or starts with generic titles (in case of extra chars)
+        is_generic = not title or any(t.lower() in title.lower() for t in generic_titles)
+
+        if is_generic and messages:
+            # Find first user message
+            user_msg = next((m for m in messages if m.role == 'user'), None)
+            if user_msg:
+                # Use first 50 chars of content
+                new_title = user_msg.content.strip().split('\n')[0]
+                # Remove markdown formatting if simple
+                new_title = new_title.replace('#', '').replace('*', '').strip()
+                if len(new_title) > 50:
+                    new_title = new_title[:47] + "..."
+                
+                if new_title:
+                    title = new_title
         
         return ChatData(
             title=title,

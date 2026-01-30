@@ -1,5 +1,5 @@
 ---
-title: "‎Gemini - direct access to Google AI"
+title: "How can I get my model to think like me"
 date: 2026-01-21
 time: "18:33"
 source_url: "https://gemini.google.com/share/b9ea5bfbcf8d"
